@@ -1,0 +1,36 @@
+
+name: Build CSC Taekwondo APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Prepare Android project
+        run: |
+          mkdir -p www
+          cp index.html www/index.html
+          mkdir -p output
+
+      - name: Build APK
+        run: |
+          npx --yes @capacitor/cli@latest create csc-build com.csc.taekwondo CSC
+          cp www/index.html csc-build/www/index.html
+          cd csc-build
+          npm install @capacitor/android
+          npx cap add android
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: CSC-Taekwondo-APK
+          path: csc-build/android/app/build/outputs/apk/debug/app-debug.apk
