@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101827">
+<title>CSC Taekwondo</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#182235}
+header{background:#101827;color:white;padding:25px 18px;border-radius:0 0 25px 25px}
+.brand{color:#f5bd42;font-weight:bold;letter-spacing:1px}
+h1{margin:12px 0 6px;font-size:27px}
+header p{color:#d5dce8}
+.container{padding:16px;max-width:650px;margin:auto}
+.card{background:white;padding:17px;border-radius:16px;margin:13px 0;box-shadow:0 3px 12px #17203310}
+h2{font-size:19px;margin-top:0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tile{background:white;border:1px solid #e1e7ef;border-radius:15px;padding:17px 10px;text-align:center;cursor:pointer}
+.tile span{display:block;font-size:27px;margin-bottom:9px}
+.tile b{font-size:14px}
+button{background:#173d72;color:white;border:0;padding:12px;border-radius:10px;font-size:15px;cursor:pointer}
+input,select{width:100%;padding:12px;margin:7px 0 12px;border:1px solid #ccd5e1;border-radius:9px;font-size:15px}
+label{font-size:14px;font-weight:bold}
+.full{width:100%}
+.muted{color:#64748b;font-size:13px;line-height:1.7}
+.stat{display:flex;justify-content:space-between;align-items:center}
+.stat strong{font-size:25px;color:#173d72}
+.hidden{display:none}
+footer{text-align:center;color:#64748b;padding:20px;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+<div class="brand">🥋 CSC TAEKWONDO</div>
+<h1>النادي الرياضي الشتمي</h1>
+<p>فرع التايكواندو — مرحبًا بكم في فضاء النادي</p>
+</header>
+<main class="container">
+<section id="home">
+<div class="card">
+<h2>مرحبًا بكم 👋</h2>
+<p>فضاء رقمي لمتابعة نشاطات النادي والرياضيين.</p>
+<div class="muted">انضباط • عمل • طموح • نجاح</div>
+</div>
+<div class="grid">
+<div class="tile" onclick="showPage('coach')"><span>👨‍🏫</span><b>فضاء المدرب</b></div>
+<div class="tile" onclick="showPage('parent')"><span>👨‍👩‍👧</span><b>فضاء الأولياء</b></div>
+<div class="tile" onclick="showPage('athletes')"><span>🥋</span><b>الرياضيون</b></div>
+<div class="tile" onclick="showPage('attendance')"><span>📋</span><b>الحضور</b></div>
+<div class="tile" onclick="showPage('register')"><span>📝</span><b>التسجيلات</b></div>
+<div class="tile" onclick="showPage('contact')"><span>☎️</span><b>اتصل بالنادي</b></div>
+</div>
+</section>
+
+<section id="coach" class="hidden">
+<div class="card">
+<h2>👨‍🏫 فضاء المدرب</h2>
+<p class="muted">واجهة أولية للتسيير. تسجيل الدخول الآمن وقاعدة البيانات غير مفعّلين بعد.</p>
+<div class="stat"><span>قائمة الرياضيين</span><strong id="count">0</strong></div>
+<button class="full" onclick="showPage('register')">إضافة رياضي</button>
+<button class="full" style="margin-top:8px" onclick="showPage('athletes')">عرض قائمة الرياضيين</button>
+<button class="full" style="margin-top:8px" onclick="showPage('attendance')">تسجيل الحضور</button>
+</div>
+</section>
+
+<section id="parent" class="hidden">
+<div class="card">
+<h2>👨‍👩‍👧 فضاء الأولياء</h2>
+<p>يمكنكم التواصل مع المدرب للاستفسار عن التسجيل والتدريبات.</p>
+<p class="muted">عرض حضور ابنكم ونتائجه يتطلب ربطًا آمنًا بقاعدة البيانات والتحقق من هوية الولي.</p>
+<button class="full" onclick="showPage('contact')">التواصل مع النادي</button>
+</div>
+</section>
+
+<section id="register" class="hidden">
+<div class="card">
+<h2>📝 تسجيل رياضي</h2>
+<label>الاسم واللقب</label>
+<input id="name" placeholder="أدخل الاسم واللقب">
+<label>تاريخ الميلاد</label>
+<input id="birth" type="date">
+<label>الفوج</label>
+<select id="group"><option>البراعم</option><option>الأصاغر</option><option>الأواسط</option><option>النخبة</option></select>
+<label>الحزام</label>
+<select id="belt"><option>أبيض</option><option>أصفر</option><option>أخضر</option><option>أزرق</option><option>أحمر</option><option>أسود</option></select>
+<button class="full" onclick="addAthlete()">حفظ على هذا الهاتف</button>
+<p class="muted">تنبيه: البيانات تحفظ محليًا على هذا الجهاز فقط، وليست قاعدة بيانات مشتركة.</p>
+</div>
+</section>
+
+<section id="athletes" class="hidden">
+<div class="card"><h2>🥋 قائمة الرياضيين</h2><div id="list">لم تتم إضافة رياضيين بعد.</div></div>
+</section>
+
+<section id="attendance" class="hidden">
+<div class="card">
+<h2>📋 الحضور</h2>
+<label>اسم الرياضي</label>
+<input id="attname" placeholder="اسم الرياضي">
+<label>حالة الحضور</label>
+<select id="status"><option>حاضر</option><option>غائب</option><option>متأخر</option></select>
+<button class="full" onclick="saveAttendance()">حفظ الحضور على هذا الهاتف</button>
+<div id="attlist"></div>
+<p class="muted">الحضور محلي على هذا الجهاز فقط في هذه النسخة.</p>
+</div>
+</section>
+
+<section id="contact" class="hidden">
+<div class="card">
+<h2>☎️ اتصل بالنادي</h2>
+<p>النادي الرياضي الشتمي — فرع التايكواندو</p>
+<p>الهاتف: <b>0661482821</b></p>
+<a href="tel:0661482821"><button class="full">الاتصال بالمدرب</button></a>
+</div>
+</section>
+<button class="full" style="margin-top:15px" onclick="showPage('home')">🏠 الصفحة الرئيسية</button>
+</main>
+<footer>CSC Taekwondo © 2026</footer>
+<script>
+const read=(k)=>{try{return JSON.parse(localStorage.getItem(k)||'[]')}catch(e){return []}};
+const write=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+function showPage(id){
+document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));
+document.getElementById(id).classList.remove('hidden');
+if(id==='athletes')renderAthletes();
+if(id==='coach')document.getElementById('count').textContent=read('cscAthletes').length;
+window.scrollTo(0,0);
+}
+function addAthlete(){
+const name=document.getElementById('name').value.trim();
+if(!name){alert('أدخل اسم الرياضي أولاً');return}
+const athletes=read('cscAthletes');
+athletes.push({name,birth:document.getElementById('birth').value,group:document.getElementById('group').value,belt:document.getElementById('belt').value});
+write('cscAthletes',athletes);
+document.getElementById('name').value='';
+alert('تم الحفظ على هذا الهاتف');
+}
+function renderAthletes(){
+const athletes=read('cscAthletes');
+document.getElementById('count').textContent=athletes.length;
+document.getElementById('list').innerHTML=athletes.length?athletes.map((a,i)=>'<div class="card"><b>'+ (i+1)+'. '+escapeText(a.name)+'</b><p class="muted">'+escapeText(a.group)+' — حزام '+escapeText(a.belt)+'</p></div>').join(''):'لم تتم إضافة رياضيين بعد.';
+}
+function escapeText(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function saveAttendance(){
+const name=document.getElementById('attname').value.trim();
+if(!name){alert('أدخل اسم الرياضي');return}
+const rows=read('cscAttendance');
+rows.unshift({name,status:document.getElementById('status').value,date:new Date().toLocaleDateString('ar-DZ')});
+write('cscAttendance',rows);
+document.getElementById('attlist').innerHTML=rows.map(a=>'<p>'+escapeText(a.name)+' — '+escapeText(a.status)+' ('+escapeText(a.date)+')</p>').join('');
+document.getElementById('attname').value='';
+}
+</script>
+</body>
+</html>
