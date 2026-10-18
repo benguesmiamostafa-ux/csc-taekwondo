@@ -12,19 +12,39 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v4
 
-      - name: Prepare Android project
-        run: |
-          mkdir -p www
-          cp index.html www/index.html
-          mkdir -p output
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
 
-      - name: Build APK
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Check project files
         run: |
-          npx --yes @capacitor/cli@latest create csc-build com.csc.taekwondo CSC
-          cp www/index.html csc-build/www/index.html
+          test -f index.html || {
+            echo "ERROR: index.html is missing"
+            exit 1
+          }
+
+      - name: Prepare web app
+        run: |
+          mkdir -p csc-build/www
+          cp index.html csc-build/www/index.html
           cd csc-build
-          npm install @capacitor/android
+          npm init -y
+          npm install @capacitor/core @capacitor/android
+          npm install --save-dev @capacitor/cli
+          npx cap init CSC com.csc.taekwondo --web-dir www
+
+      - name: Build Android APK
+        run: |
+          cd csc-build
           npx cap add android
+          npx cap sync android
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
@@ -34,3 +54,4 @@ jobs:
         with:
           name: CSC-Taekwondo-APK
           path: csc-build/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
