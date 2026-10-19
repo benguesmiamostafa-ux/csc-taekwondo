@@ -9,25 +9,21 @@
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#182235}
-header{background:#101827;color:white;padding:25px 18px;border-radius:0 0 25px 25px}
-.brand{color:#f5bd42;font-weight:bold;letter-spacing:1px}
-h1{margin:12px 0 6px;font-size:27px}
-header p{color:#d5dce8}
+header{background:#101827;color:white;padding:24px 18px;border-radius:0 0 25px 25px}
+.brand{color:#f5bd42;font-weight:bold}
+h1{font-size:26px}
 .container{padding:16px;max-width:650px;margin:auto}
 .card{background:white;padding:17px;border-radius:16px;margin:13px 0;box-shadow:0 3px 12px #17203310}
-h2{font-size:19px;margin-top:0}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.tile{background:white;border:1px solid #e1e7ef;border-radius:15px;padding:17px 10px;text-align:center;cursor:pointer}
-.tile span{display:block;font-size:27px;margin-bottom:9px}
-.tile b{font-size:14px}
+.tile{background:white;border:1px solid #e1e7ef;border-radius:15px;padding:17px 8px;text-align:center;cursor:pointer}
+.tile span{display:block;font-size:26px;margin-bottom:8px}
 button{background:#173d72;color:white;border:0;padding:12px;border-radius:10px;font-size:15px;cursor:pointer}
 input,select{width:100%;padding:12px;margin:7px 0 12px;border:1px solid #ccd5e1;border-radius:9px;font-size:15px}
 label{font-size:14px;font-weight:bold}
-.full{width:100%}
+.full{width:100%;margin:5px 0}
 .muted{color:#64748b;font-size:13px;line-height:1.7}
-.stat{display:flex;justify-content:space-between;align-items:center}
-.stat strong{font-size:25px;color:#173d72}
 .hidden{display:none}
+.item{padding:12px;background:#f1f5f9;border-radius:10px;margin:8px 0}
 footer{text-align:center;color:#64748b;padding:20px;font-size:12px}
 </style>
 </head>
@@ -35,14 +31,15 @@ footer{text-align:center;color:#64748b;padding:20px;font-size:12px}
 <header>
 <div class="brand">🥋 CSC TAEKWONDO</div>
 <h1>النادي الرياضي الشتمي</h1>
-<p>فرع التايكواندو — مرحبًا بكم في فضاء النادي</p>
+<p>فرع التايكواندو — فضاء النادي</p>
 </header>
+
 <main class="container">
 <section id="home">
 <div class="card">
 <h2>مرحبًا بكم 👋</h2>
-<p>فضاء رقمي لمتابعة نشاطات النادي والرياضيين.</p>
-<div class="muted">انضباط • عمل • طموح • نجاح</div>
+<p>فضاء تسيير الرياضيين والحضور.</p>
+<p class="muted">انضباط • عمل • طموح • نجاح</p>
 </div>
 <div class="grid">
 <div class="tile" onclick="showPage('coach')"><span>👨‍🏫</span><b>فضاء المدرب</b></div>
@@ -56,21 +53,31 @@ footer{text-align:center;color:#64748b;padding:20px;font-size:12px}
 
 <section id="coach" class="hidden">
 <div class="card">
-<h2>👨‍🏫 فضاء المدرب</h2>
-<p class="muted">واجهة أولية للتسيير. تسجيل الدخول الآمن وقاعدة البيانات غير مفعّلين بعد.</p>
-<div class="stat"><span>قائمة الرياضيين</span><strong id="count">0</strong></div>
+<h2>🔐 دخول المدرب</h2>
+<div id="loginBox">
+<label>البريد الإلكتروني</label>
+<input id="email" type="email" autocomplete="username" placeholder="البريد الإلكتروني">
+<label>كلمة المرور</label>
+<input id="password" type="password" autocomplete="current-password" placeholder="كلمة المرور">
+<button class="full" onclick="login()">تسجيل الدخول</button>
+</div>
+<div id="coachBox" class="hidden">
+<p id="coachEmail" class="muted"></p>
 <button class="full" onclick="showPage('register')">إضافة رياضي</button>
-<button class="full" style="margin-top:8px" onclick="showPage('athletes')">عرض قائمة الرياضيين</button>
-<button class="full" style="margin-top:8px" onclick="showPage('attendance')">تسجيل الحضور</button>
+<button class="full" onclick="showPage('athletes')">قائمة الرياضيين</button>
+<button class="full" onclick="showPage('attendance')">تسجيل الحضور</button>
+<button class="full" onclick="logout()">تسجيل الخروج</button>
+</div>
+<p id="loginMessage" class="muted"></p>
 </div>
 </section>
 
 <section id="parent" class="hidden">
 <div class="card">
 <h2>👨‍👩‍👧 فضاء الأولياء</h2>
-<p>يمكنكم التواصل مع المدرب للاستفسار عن التسجيل والتدريبات.</p>
-<p class="muted">عرض حضور ابنكم ونتائجه يتطلب ربطًا آمنًا بقاعدة البيانات والتحقق من هوية الولي.</p>
+<p>للاستفسار عن التسجيل والتدريبات ونتائج الرياضيين، يرجى التواصل مع المدرب.</p>
 <button class="full" onclick="showPage('contact')">التواصل مع النادي</button>
+<p class="muted">الدخول الخاص بالأولياء وعرض بيانات أبنائهم غير مفعّل في هذه النسخة.</p>
 </div>
 </section>
 
@@ -78,32 +85,37 @@ footer{text-align:center;color:#64748b;padding:20px;font-size:12px}
 <div class="card">
 <h2>📝 تسجيل رياضي</h2>
 <label>الاسم واللقب</label>
-<input id="name" placeholder="أدخل الاسم واللقب">
+<input id="name" placeholder="الاسم واللقب">
 <label>تاريخ الميلاد</label>
 <input id="birth" type="date">
 <label>الفوج</label>
 <select id="group"><option>البراعم</option><option>الأصاغر</option><option>الأواسط</option><option>النخبة</option></select>
 <label>الحزام</label>
 <select id="belt"><option>أبيض</option><option>أصفر</option><option>أخضر</option><option>أزرق</option><option>أحمر</option><option>أسود</option></select>
-<button class="full" onclick="addAthlete()">حفظ على هذا الهاتف</button>
-<p class="muted">تنبيه: البيانات تحفظ محليًا على هذا الجهاز فقط، وليست قاعدة بيانات مشتركة.</p>
+<button class="full" onclick="addAthlete()">حفظ الرياضي</button>
+<p id="registerMessage" class="muted"></p>
 </div>
 </section>
 
 <section id="athletes" class="hidden">
-<div class="card"><h2>🥋 قائمة الرياضيين</h2><div id="list">لم تتم إضافة رياضيين بعد.</div></div>
+<div class="card">
+<h2>🥋 قائمة الرياضيين</h2>
+<button class="full" onclick="renderAthletes()">تحديث القائمة</button>
+<div id="list">سجّل دخول المدرب أولًا.</div>
+</div>
 </section>
 
 <section id="attendance" class="hidden">
 <div class="card">
-<h2>📋 الحضور</h2>
-<label>اسم الرياضي</label>
-<input id="attname" placeholder="اسم الرياضي">
+<h2>📋 تسجيل الحضور</h2>
+<label>الرياضي</label>
+<select id="attAthlete"><option value="">اختر الرياضي</option></select>
 <label>حالة الحضور</label>
 <select id="status"><option>حاضر</option><option>غائب</option><option>متأخر</option></select>
-<button class="full" onclick="saveAttendance()">حفظ الحضور على هذا الهاتف</button>
+<button class="full" onclick="saveAttendance()">حفظ الحضور</button>
+<button class="full" onclick="renderAttendance()">عرض سجل الحضور</button>
 <div id="attlist"></div>
-<p class="muted">الحضور محلي على هذا الجهاز فقط في هذه النسخة.</p>
+<p id="attendanceMessage" class="muted"></p>
 </div>
 </section>
 
@@ -115,42 +127,205 @@ footer{text-align:center;color:#64748b;padding:20px;font-size:12px}
 <a href="tel:0661482821"><button class="full">الاتصال بالمدرب</button></a>
 </div>
 </section>
-<button class="full" style="margin-top:15px" onclick="showPage('home')">🏠 الصفحة الرئيسية</button>
+
+<button class="full" onclick="showPage('home')">🏠 الصفحة الرئيسية</button>
 </main>
 <footer>CSC Taekwondo © 2026</footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
-const read=(k)=>{try{return JSON.parse(localStorage.getItem(k)||'[]')}catch(e){return []}};
-const write=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
-function showPage(id){
-document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));
-document.getElementById(id).classList.remove('hidden');
-if(id==='athletes')renderAthletes();
-if(id==='coach')document.getElementById('count').textContent=read('cscAthletes').length;
-window.scrollTo(0,0);
+const firebaseConfig = {
+  apiKey: "AIzaSyBUPHQ8kYARJxWULUb7Gl25myIWHsB6QBk",
+  authDomain: "csc-tkd-chetma.firebaseapp.com",
+  projectId: "csc-tkd-chetma",
+  storageBucket: "csc-tkd-chetma.firebasestorage.app",
+  messagingSenderId: "599425218350",
+  appId: "1:599425218350:web:0462815f4f4cfd63266cbf",
+  measurementId: "G-W4MVERYPRG"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// حساب المدرب الذي أنشأته في Firebase Authentication
+const COACH_UID = "UW3wx4WKcAWTLC2AWOQ5vJLKjVz2";
+
+function showPage(id) {
+  document.querySelectorAll("main section").forEach(s => s.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+  if(id === "athletes") renderAthletes();
+  if(id === "attendance") loadAthleteOptions();
+  if(id === "coach") updateCoachView();
+  window.scrollTo(0,0);
 }
-function addAthlete(){
-const name=document.getElementById('name').value.trim();
-if(!name){alert('أدخل اسم الرياضي أولاً');return}
-const athletes=read('cscAthletes');
-athletes.push({name,birth:document.getElementById('birth').value,group:document.getElementById('group').value,belt:document.getElementById('belt').value});
-write('cscAthletes',athletes);
-document.getElementById('name').value='';
-alert('تم الحفظ على هذا الهاتف');
+
+function isCoach() {
+  return auth.currentUser && auth.currentUser.uid === COACH_UID;
 }
-function renderAthletes(){
-const athletes=read('cscAthletes');
-document.getElementById('count').textContent=athletes.length;
-document.getElementById('list').innerHTML=athletes.length?athletes.map((a,i)=>'<div class="card"><b>'+ (i+1)+'. '+escapeText(a.name)+'</b><p class="muted">'+escapeText(a.group)+' — حزام '+escapeText(a.belt)+'</p></div>').join(''):'لم تتم إضافة رياضيين بعد.';
+
+function updateCoachView() {
+  const ok = isCoach();
+  document.getElementById("loginBox").classList.toggle("hidden", ok);
+  document.getElementById("coachBox").classList.toggle("hidden", !ok);
+  document.getElementById("coachEmail").textContent =
+    ok ? "تم تسجيل الدخول: " + auth.currentUser.email : "";
 }
-function escapeText(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function saveAttendance(){
-const name=document.getElementById('attname').value.trim();
-if(!name){alert('أدخل اسم الرياضي');return}
-const rows=read('cscAttendance');
-rows.unshift({name,status:document.getElementById('status').value,date:new Date().toLocaleDateString('ar-DZ')});
-write('cscAttendance',rows);
-document.getElementById('attlist').innerHTML=rows.map(a=>'<p>'+escapeText(a.name)+' — '+escapeText(a.status)+' ('+escapeText(a.date)+')</p>').join('');
-document.getElementById('attname').value='';
+
+auth.onAuthStateChanged(user => {
+  updateCoachView();
+  if(user && user.uid !== COACH_UID) {
+    auth.signOut();
+    document.getElementById("loginMessage").textContent =
+      "هذا الحساب ليس حساب المدرب المصرح به.";
+  }
+});
+
+async function login() {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const msg = document.getElementById("loginMessage");
+  if(!email || !password) {
+    msg.textContent = "أدخل البريد الإلكتروني وكلمة المرور.";
+    return;
+  }
+  try {
+    const result = await auth.signInWithEmailAndPassword(email,password);
+    if(result.user.uid !== COACH_UID) {
+      await auth.signOut();
+      msg.textContent = "هذا الحساب غير مصرح له بالدخول كمدرب.";
+      return;
+    }
+    msg.textContent = "تم تسجيل الدخول بنجاح.";
+    showPage("coach");
+  } catch(e) {
+    msg.textContent = "تعذر الدخول. تحقق من البريد وكلمة المرور وإعدادات Firebase.";
+  }
+}
+
+async function logout() {
+  await auth.signOut();
+  document.getElementById("loginMessage").textContent = "تم تسجيل الخروج.";
+  showPage("coach");
+}
+
+function requireCoach() {
+  if(!isCoach()) {
+    alert("يجب تسجيل دخول حساب المدرب أولًا.");
+    showPage("coach");
+    return false;
+  }
+  return true;
+}
+
+async function addAthlete() {
+  if(!requireCoach()) return;
+  const name = document.getElementById("name").value.trim();
+  const msg = document.getElementById("registerMessage");
+  if(!name) { msg.textContent = "أدخل اسم الرياضي."; return; }
+  try {
+    await db.collection("athletes").add({
+      name,
+      birth: document.getElementById("birth").value,
+      group: document.getElementById("group").value,
+      belt: document.getElementById("belt").value,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    document.getElementById("name").value = "";
+    document.getElementById("birth").value = "";
+    msg.textContent = "تم حفظ الرياضي في قاعدة البيانات المشتركة.";
+  } catch(e) {
+    msg.textContent = "تعذر الحفظ. تأكد من نشر قواعد Firestore الصحيحة.";
+  }
+}
+
+async function renderAthletes() {
+  if(!requireCoach()) return;
+  const list = document.getElementById("list");
+  list.textContent = "جارٍ تحميل الرياضيين...";
+  try {
+    const snap = await db.collection("athletes").orderBy("createdAt","desc").get();
+    list.innerHTML = "";
+    if(snap.empty) { list.textContent = "لا يوجد رياضيون مسجلون بعد."; return; }
+    let i = 0;
+    snap.forEach(doc => {
+      const a = doc.data();
+      const div = document.createElement("div");
+      div.className = "item";
+      const b = document.createElement("b");
+      b.textContent = (++i) + ". " + (a.name || "");
+      const p = document.createElement("p");
+      p.className = "muted";
+      p.textContent = (a.group || "") + " — الحزام: " + (a.belt || "");
+      div.append(b,p);
+      list.appendChild(div);
+    });
+  } catch(e) {
+    list.textContent = "تعذر تحميل القائمة. تحقق من قواعد Firestore.";
+  }
+}
+
+async function loadAthleteOptions() {
+  if(!requireCoach()) return;
+  const select = document.getElementById("attAthlete");
+  select.innerHTML = '<option value="">جارٍ تحميل الرياضيين...</option>';
+  try {
+    const snap = await db.collection("athletes").orderBy("name").get();
+    select.innerHTML = '<option value="">اختر الرياضي</option>';
+    snap.forEach(doc => {
+      const opt = document.createElement("option");
+      opt.value = doc.id;
+      opt.textContent = doc.data().name || "رياضي";
+      select.appendChild(opt);
+    });
+  } catch(e) {
+    select.innerHTML = '<option value="">تعذر تحميل الرياضيين</option>';
+  }
+}
+
+async function saveAttendance() {
+  if(!requireCoach()) return;
+  const athleteId = document.getElementById("attAthlete").value;
+  const msg = document.getElementById("attendanceMessage");
+  if(!athleteId) { msg.textContent = "اختر الرياضي أولًا."; return; }
+  try {
+    const doc = await db.collection("athletes").doc(athleteId).get();
+    if(!doc.exists) { msg.textContent = "الرياضي غير موجود."; return; }
+    await db.collection("attendance").add({
+      athleteId,
+      athleteName: doc.data().name || "",
+      status: document.getElementById("status").value,
+      date: new Date().toLocaleDateString("en-CA"),
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    msg.textContent = "تم حفظ الحضور في قاعدة البيانات.";
+  } catch(e) {
+    msg.textContent = "تعذر الحفظ. تحقق من قواعد Firestore.";
+  }
+}
+
+async function renderAttendance() {
+  if(!requireCoach()) return;
+  const box = document.getElementById("attlist");
+  box.textContent = "جارٍ تحميل سجل الحضور...";
+  try {
+    const snap = await db.collection("attendance")
+      .orderBy("createdAt","desc").limit(100).get();
+    box.innerHTML = "";
+    if(snap.empty) { box.textContent = "لا يوجد سجل حضور بعد."; return; }
+    snap.forEach(doc => {
+      const a = doc.data();
+      const p = document.createElement("p");
+      p.className = "item";
+      p.textContent = (a.athleteName || "") + " — " +
+        (a.status || "") + " — " + (a.date || "");
+      box.appendChild(p);
+    });
+  } catch(e) {
+    box.textContent = "تعذر تحميل سجل الحضور.";
+  }
 }
 </script>
 </body>
