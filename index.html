@@ -33,9 +33,9 @@ footer{text-align:center;color:#64748b;padding:20px;font-size:12px}
 </head>
 <body>
 <header>
-  <div class="brand">🏆 CLUB APP</div>
+  <div class="brand" id="clubBrand">🏆 CLUB APP</div>
   <h1 id="clubTitle">Club App</h1>
-  <p>الرياضيون • التسجيلات • الحضور والغياب</p>
+  <p id="clubSportDisplay">الرياضيون • التسجيلات • الحضور والغياب</p>
 </header>
 
 <main class="container">
@@ -363,6 +363,11 @@ function saveClubSettings() {
 
   document.getElementById("clubTitle").textContent =
     settings.clubName || "Club App";
+  document.getElementById("clubBrand").textContent =
+    "🏆 " + (settings.clubName || "CLUB APP");
+
+document.getElementById("clubSportDisplay").textContent =
+    settings.sport || "الرياضيون • التسجيلات • الحضور والغياب"
 
   alert("تم حفظ إعدادات النادي على هذا الجهاز.");
 }
@@ -380,6 +385,11 @@ function loadClubSettings() {
 
   document.getElementById("clubTitle").textContent =
     settings.clubName || "Club App";
+    document.getElementById("clubBrand").textContent =
+    "🏆 " + (settings.clubName || "CLUB APP");
+
+  document.getElementById("clubSportDisplay").textContent =
+    settings.sport || "الرياضيون • التسجيلات • الحضور والغياب";
 }
 
 loadClubSettings();</script>
