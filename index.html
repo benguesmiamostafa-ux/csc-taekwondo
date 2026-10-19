@@ -34,7 +34,7 @@ footer{text-align:center;color:#64748b;padding:20px;font-size:12px}
 <body>
 <header>
   <div class="brand">🏆 CLUB APP</div>
-  <h1>Club App</h1>
+  <h1 id="clubTitle">Club App</h1>
   <p>الرياضيون • التسجيلات • الحضور والغياب</p>
 </header>
 
@@ -51,8 +51,34 @@ footer{text-align:center;color:#64748b;padding:20px;font-size:12px}
     <div class="tile" onclick="showPage('register')"><span>📝</span><b>إضافة رياضي</b></div>
     <div class="tile" onclick="showPage('attendance')"><span>📋</span><b>سجل الحضور</b></div>
   </div>
+  <div class="tile" onclick="showPage('settings')">
+  <span>⚙️</span>
+  <b>إعدادات النادي</b>
+</div>
 </section>
 
+  <section id="settings" class="hidden">
+  <div class="card">
+    <h2>⚙️ إعدادات النادي</h2>
+
+    <label>اسم النادي</label>
+    <input id="settingClubName" placeholder="اكتب اسم النادي">
+
+    <label>نوع الرياضة</label>
+    <input id="settingSport" placeholder="مثال: Taekwondo">
+
+    <label>اسم المدرب</label>
+    <input id="settingCoachName" placeholder="اكتب اسم المدرب">
+
+    <label>رقم الهاتف</label>
+    <input id="settingPhone" type="tel" placeholder="رقم الهاتف">
+
+    <button class="full" onclick="saveClubSettings()">💾 حفظ الإعدادات</button>
+    <button class="full" onclick="showPage('home')">↩️ رجوع للرئيسية</button>
+
+    <p class="muted">الإعدادات المحفوظة على هذا الجهاز فقط في هذه المرحلة.</p>
+  </div>
+</section>
 <section id="coach" class="hidden">
   <div class="card">
     <h2>🔐 دخول المدرب</h2>
@@ -325,6 +351,37 @@ async function renderAttendance() {
     box.textContent="تعذر تحميل سجل الحضور.";
   }
 }
-</script>
+function saveClubSettings() {
+  const settings = {
+    clubName: document.getElementById("settingClubName").value.trim(),
+    sport: document.getElementById("settingSport").value.trim(),
+    coachName: document.getElementById("settingCoachName").value.trim(),
+    phone: document.getElementById("settingPhone").value.trim()
+  };
+
+  localStorage.setItem("clubSettings", JSON.stringify(settings));
+
+  document.getElementById("clubTitle").textContent =
+    settings.clubName || "Club App";
+
+  alert("تم حفظ إعدادات النادي على هذا الجهاز.");
+}
+
+function loadClubSettings() {
+  const saved = localStorage.getItem("clubSettings");
+  if (!saved) return;
+
+  const settings = JSON.parse(saved);
+
+  document.getElementById("settingClubName").value = settings.clubName || "";
+  document.getElementById("settingSport").value = settings.sport || "";
+  document.getElementById("settingCoachName").value = settings.coachName || "";
+  document.getElementById("settingPhone").value = settings.phone || "";
+
+  document.getElementById("clubTitle").textContent =
+    settings.clubName || "Club App";
+}
+
+loadClubSettings();</script>
 </body>
 </html>
