@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -11,7 +10,7 @@
 body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#182235}
 header{background:#101827;color:white;padding:22px 18px;border-radius:0 0 24px 24px}
 .brand{color:#f5bd42;font-weight:bold;font-size:22px}
-.container{padding:15px;max-width:650px;margin:auto}
+.container{padding:15px;max-width:720px;margin:auto}
 .card{background:white;padding:16px;border-radius:15px;margin:13px 0;box-shadow:0 3px 12px #17203310}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .tile{background:white;border:1px solid #e1e7ef;border-radius:13px;padding:17px 7px;text-align:center;cursor:pointer}
@@ -25,95 +24,109 @@ label{font-size:14px;font-weight:bold}
 .item{padding:12px;background:#f1f5f9;border-radius:10px;margin:9px 0}
 .actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
 .actions button{flex:1;min-width:85px}
-.present{background:#16834a}
-.absent{background:#c62828}
-.delete{background:#a61b1b}
+.present{background:#16834a}.absent{background:#c62828}.delete{background:#a61b1b}
+.good{color:#16834a}.bad{color:#c62828}
+.metric{background:#f8fafc;border:1px solid #e1e7ef;border-radius:12px;padding:12px;text-align:center}
+.metric strong{display:block;font-size:20px;margin-top:6px;overflow-wrap:anywhere}
 footer{text-align:center;color:#64748b;padding:20px;font-size:12px}
+hr{border:0;border-top:1px solid #e2e8f0;margin:15px 0}
 </style>
 </head>
 <body>
 <header>
   <div class="brand">🏆 CLUB APP</div>
   <h1>إدارة النادي الرياضي</h1>
-  <p>الرياضيون • التسجيلات • الحضور والغياب</p>
+  <p>الرياضيون • الحضور والغياب • التسيير المالي</p>
 </header>
-
 <main class="container">
 <section id="home">
-  <div class="card">
-    <h2>مرحبًا بكم 👋</h2>
-    <p>فضاء تسيير النادي الرياضي.</p>
-    <p class="muted">تنظيم • انضباط • عمل • نجاح</p>
-  </div>
+  <div class="card"><h2>مرحبًا بكم 👋</h2><p>فضاء تسيير النادي الرياضي.</p><p class="muted">تنظيم • انضباط • عمل • نجاح</p></div>
   <div class="grid">
     <div class="tile" onclick="showPage('coach')"><span>👨‍🏫</span><b>فضاء المدرب</b></div>
     <div class="tile" onclick="showPage('athletes')"><span>👥</span><b>الرياضيون</b></div>
     <div class="tile" onclick="showPage('register')"><span>📝</span><b>إضافة رياضي</b></div>
-    <div class="tile" onclick="showPage('attendance')"><span>📋</span><b>سجل الحضور</b></div>
+    <div class="tile" onclick="showPage('attendance')"><span>📋</span><b>الحضور والغياب</b></div>
+    <div class="tile" onclick="showPage('finance')"><span>💰</span><b>المالية والاشتراكات</b></div>
+    <div class="tile" onclick="showPage('settings')"><span>⚙️</span><b>إعدادات الاشتراك</b></div>
   </div>
 </section>
 
-<section id="coach" class="hidden">
-  <div class="card">
-    <h2>🔐 دخول المدرب</h2>
-    <div id="loginBox">
-      <label>البريد الإلكتروني</label>
-      <input id="email" type="email" autocomplete="username">
-      <label>كلمة المرور</label>
-      <input id="password" type="password" autocomplete="current-password">
-      <button class="full" onclick="login()">تسجيل الدخول</button>
+<section id="coach" class="hidden"><div class="card">
+  <h2>🔐 دخول المدرب</h2>
+  <div id="loginBox"><label>البريد الإلكتروني</label><input id="email" type="email" autocomplete="username">
+  <label>كلمة المرور</label><input id="password" type="password" autocomplete="current-password">
+  <button class="full" onclick="login()">تسجيل الدخول</button></div>
+  <div id="coachBox" class="hidden"><p id="coachEmail" class="muted"></p>
+  <button class="full" onclick="showPage('register')">إضافة رياضي</button>
+  <button class="full" onclick="showPage('athletes')">قائمة الرياضيين</button>
+  <button class="full" onclick="showPage('attendance')">سجل الحضور</button>
+  <button class="full" onclick="showPage('finance')">المالية والاشتراكات</button>
+  <button class="full" onclick="showPage('settings')">إعدادات الاشتراك</button>
+  <button class="full" onclick="logout()">تسجيل الخروج</button></div>
+  <p id="loginMessage" class="muted"></p>
+</div></section>
+
+<section id="register" class="hidden"><div class="card">
+  <h2>📝 ملف رياضي جديد</h2>
+  <label>الاسم واللقب</label><input id="name" placeholder="الاسم واللقب">
+  <label>تاريخ الميلاد</label><input id="birth" type="date">
+  <label>نوع الرياضة</label><input id="sport" placeholder="مثال: تايكواندو، كرة القدم">
+  <label>الفوج</label><input id="group" placeholder="اسم الفوج">
+  <label>المستوى أو الحزام (اختياري)</label><input id="belt" placeholder="المستوى أو الحزام">
+  <label>رقم هاتف الولي</label><input id="parentPhone" type="tel" inputmode="tel" placeholder="رقم هاتف الولي">
+  <button class="full" onclick="addAthlete()">حفظ الرياضي</button><p id="registerMessage" class="muted"></p>
+</div></section>
+
+<section id="athletes" class="hidden"><div class="card"><h2>👥 قائمة الرياضيين</h2>
+  <button class="full" onclick="renderAthletes()">تحديث القائمة</button><div id="list">سجّل دخول المدرب أولًا.</div>
+</div></section>
+<section id="attendance" class="hidden"><div class="card"><h2>📋 سجل الحضور والغياب</h2>
+  <button class="full" onclick="renderAttendance()">تحديث السجل</button><div id="attlist"></div>
+</div></section>
+
+<section id="finance" class="hidden">
+  <div class="card"><h2>💰 الملخص المالي</h2><p class="muted">الأرقام محسوبة من العمليات المسجلة في قاعدة البيانات.</p>
+    <div class="grid">
+      <div class="metric">مجموع المداخيل<strong id="totalIncome">— دج</strong></div>
+      <div class="metric">مجموع المصاريف<strong id="totalExpenses">— دج</strong></div>
+      <div class="metric">الرصيد الصافي<strong id="netBalance">— دج</strong></div>
+      <div class="metric">اشتراك الشهر<strong id="feeSummary">1500 دج</strong></div>
     </div>
-    <div id="coachBox" class="hidden">
-      <p id="coachEmail" class="muted"></p>
-      <button class="full" onclick="showPage('register')">إضافة رياضي</button>
-      <button class="full" onclick="showPage('athletes')">قائمة الرياضيين</button>
-      <button class="full" onclick="showPage('attendance')">سجل الحضور</button>
-      <button class="full" onclick="logout()">تسجيل الخروج</button>
-    </div>
-    <p id="loginMessage" class="muted"></p>
+    <button class="full" onclick="refreshFinance()">تحديث الملخص</button>
   </div>
+  <div class="card"><h2>🧾 تسجيل اشتراك رياضي</h2>
+    <label>الرياضي</label><select id="paymentAthlete"><option value="">تحميل الرياضيين...</option></select>
+    <label>الشهر</label><input id="paymentMonth" type="month">
+    <label>المبلغ المدفوع (دج)</label><input id="paymentAmount" type="number" min="1" step="1" placeholder="مثال: 1500">
+    <p id="paymentHint" class="muted">الاشتراك الافتراضي 1500 دج. يمكنك تسجيل دفع جزئي.</p>
+    <button class="full" onclick="recordSubscription()">حفظ دفعة الاشتراك</button><p id="paymentMessage" class="muted"></p>
+  </div>
+  <div class="card"><h2>📥 تسجيل مدخول آخر</h2>
+    <label>سبب المدخول</label><input id="incomeReason" placeholder="مثال: إعانة أو تبرع">
+    <label>المبلغ (دج)</label><input id="incomeAmount" type="number" min="1" step="1" placeholder="المبلغ">
+    <label>التاريخ</label><input id="incomeDate" type="date">
+    <button class="full" onclick="recordIncome()">حفظ المدخول</button><p id="incomeMessage" class="muted"></p>
+  </div>
+  <div class="card"><h2>📤 تسجيل مصروف</h2>
+    <label>نوع المصروف</label><select id="expenseCategory"><option>الكراء</option><option>المعدات الرياضية</option><option>التنقلات</option><option>المنافسات</option><option>الماء والكهرباء</option><option>أخرى</option></select>
+    <label>التفاصيل</label><input id="expenseReason" placeholder="تفاصيل المصروف">
+    <label>المبلغ (دج)</label><input id="expenseAmount" type="number" min="1" step="1" placeholder="المبلغ">
+    <label>التاريخ</label><input id="expenseDate" type="date">
+    <button class="full" onclick="recordExpense()">حفظ المصروف</button><p id="expenseMessage" class="muted"></p>
+  </div>
+  <div class="card"><h2>📚 آخر العمليات</h2><button class="full" onclick="renderTransactions()">تحديث العمليات</button><div id="transactions"></div></div>
+  <div class="card"><h2>📆 حالة اشتراكات هذا الشهر</h2><button class="full" onclick="renderSubscriptionStatus()">تحديث حالة الاشتراكات</button><div id="subscriptionStatus"></div></div>
 </section>
 
-<section id="register" class="hidden">
-  <div class="card">
-    <h2>📝 ملف رياضي جديد</h2>
-    <label>الاسم واللقب</label>
-    <input id="name" placeholder="الاسم واللقب">
-    <label>تاريخ الميلاد</label>
-    <input id="birth" type="date">
-    <label>نوع الرياضة</label>
-    <input id="sport" placeholder="مثال: تايكواندو، كرة القدم">
-    <label>الفوج</label>
-    <input id="group" placeholder="اسم الفوج">
-    <label>المستوى أو الحزام (اختياري)</label>
-    <input id="belt" placeholder="المستوى أو الحزام">
-    <label>رقم هاتف الولي</label>
-    <input id="parentPhone" type="tel" inputmode="tel" placeholder="رقم هاتف الولي">
-    <button class="full" onclick="addAthlete()">حفظ الرياضي</button>
-    <p id="registerMessage" class="muted"></p>
-  </div>
-</section>
-
-<section id="athletes" class="hidden">
-  <div class="card">
-    <h2>👥 قائمة الرياضيين</h2>
-    <button class="full" onclick="renderAthletes()">تحديث القائمة</button>
-    <div id="list">سجّل دخول المدرب أولًا.</div>
-  </div>
-</section>
-
-<section id="attendance" class="hidden">
-  <div class="card">
-    <h2>📋 سجل الحضور والغياب</h2>
-    <button class="full" onclick="renderAttendance()">تحديث السجل</button>
-    <div id="attlist"></div>
-  </div>
-</section>
+<section id="settings" class="hidden"><div class="card"><h2>⚙️ إعدادات الاشتراك</h2>
+  <p class="muted">المبلغ الافتراضي الحالي 1500 دج لكل رياضي شهريًا. التغيير يؤثر على حساب الأشهر القادمة ولا يغيّر الدفعات القديمة.</p>
+  <label>الاشتراك الشهري لكل رياضي (دج)</label><input id="monthlyFee" type="number" min="0" step="50" value="1500">
+  <button class="full" onclick="saveFinanceSettings()">حفظ مبلغ الاشتراك</button><p id="settingsMessage" class="muted"></p>
+</div></section>
 
 <button class="full" onclick="showPage('home')">🏠 الصفحة الرئيسية</button>
 </main>
 <footer>Club App © 2026</footer>
-
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -127,204 +140,135 @@ const firebaseConfig = {
   appId: "1:599425218350:web:0462815f4f4cfd63266cbf",
   measurementId: "G-W4MVERYPRG"
 };
-
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-const COACH_UID = "UW3wx4WKcAWTLC2AWOQ5vJLKjVz2";
+const auth=firebase.auth(), db=firebase.firestore();
+const COACH_UID="UW3wx4WKcAWTLC2AWOQ5vJLKjVz2";
+let currentMonthlyFee=1500;
+const money=n=>Number(n||0).toLocaleString("fr-FR")+" دج";
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const currentMonth=()=>today().slice(0,7);
 
-function showPage(id) {
+function showPage(id){
   document.querySelectorAll("main section").forEach(s=>s.classList.add("hidden"));
   document.getElementById(id).classList.remove("hidden");
-  if(id==="athletes") renderAthletes();
-  if(id==="attendance") renderAttendance();
-  if(id==="coach") updateCoachView();
+  if(id==="athletes")renderAthletes();
+  if(id==="attendance")renderAttendance();
+  if(id==="coach")updateCoachView();
+  if(id==="finance"){loadAthleteOptions();loadFinanceSettings();refreshFinance();renderTransactions();renderSubscriptionStatus();}
+  if(id==="settings")loadFinanceSettings();
   window.scrollTo(0,0);
 }
-
-function isCoach() {
-  return auth.currentUser && auth.currentUser.uid===COACH_UID;
-}
-
-function requireCoach() {
-  if(!isCoach()) {
-    alert("يجب تسجيل دخول حساب المدرب أولًا.");
-    showPage("coach");
-    return false;
-  }
-  return true;
-}
-
-function updateCoachView() {
-  const ok=isCoach();
-  document.getElementById("loginBox").classList.toggle("hidden",ok);
-  document.getElementById("coachBox").classList.toggle("hidden",!ok);
-  document.getElementById("coachEmail").textContent=
-    ok ? "تم تسجيل الدخول: "+auth.currentUser.email : "";
-}
-
+function isCoach(){return !!auth.currentUser&&auth.currentUser.uid===COACH_UID}
+function requireCoach(){if(!isCoach()){alert("يجب تسجيل دخول حساب المدرب أولًا.");showPage("coach");return false}return true}
+function updateCoachView(){const ok=isCoach();document.getElementById("loginBox").classList.toggle("hidden",ok);document.getElementById("coachBox").classList.toggle("hidden",!ok);document.getElementById("coachEmail").textContent=ok?"تم تسجيل الدخول: "+(auth.currentUser.email||""):""}
 auth.onAuthStateChanged(user=>{
-  if(user && user.uid!==COACH_UID) {
-    auth.signOut();
-    document.getElementById("loginMessage").textContent=
-      "هذا الحساب غير مصرح له بالدخول كمدرب.";
-  } else {
-    updateCoachView();
-  }
+  if(user&&user.uid!==COACH_UID){auth.signOut();document.getElementById("loginMessage").textContent="هذا الحساب غير مصرح له بالدخول كمدرب."}
+  else updateCoachView();
 });
-
-async function login() {
-  const email=document.getElementById("email").value.trim();
-  const password=document.getElementById("password").value;
-  const msg=document.getElementById("loginMessage");
-  if(!email||!password){msg.textContent="أدخل البريد وكلمة المرور.";return;}
-  try {
-    const result=await auth.signInWithEmailAndPassword(email,password);
-    if(result.user.uid!==COACH_UID) {
-      await auth.signOut();
-      msg.textContent="هذا الحساب غير مصرح له بالدخول كمدرب.";
-      return;
-    }
-    msg.textContent="تم تسجيل الدخول بنجاح.";
-    showPage("coach");
-  } catch(e) {
-    msg.textContent="تعذر الدخول. تحقق من البريد وكلمة المرور.";
-  }
+async function login(){
+  const email=document.getElementById("email").value.trim(),password=document.getElementById("password").value,msg=document.getElementById("loginMessage");
+  if(!email||!password){msg.textContent="أدخل البريد وكلمة المرور.";return}
+  try{const result=await auth.signInWithEmailAndPassword(email,password);if(result.user.uid!==COACH_UID){await auth.signOut();msg.textContent="هذا الحساب غير مصرح له بالدخول كمدرب.";return}msg.textContent="تم تسجيل الدخول بنجاح.";showPage("coach")}
+  catch(e){msg.textContent="تعذر الدخول. تحقق من البريد وكلمة المرور."}
 }
-
-async function logout() {
-  await auth.signOut();
-  document.getElementById("loginMessage").textContent="تم تسجيل الخروج.";
-  showPage("coach");
+async function logout(){await auth.signOut();document.getElementById("loginMessage").textContent="تم تسجيل الخروج.";showPage("coach")}
+async function addAthlete(){
+  if(!requireCoach())return;const name=document.getElementById("name").value.trim(),msg=document.getElementById("registerMessage");
+  if(!name){msg.textContent="أدخل اسم الرياضي.";return}
+  try{await db.collection("athletes").add({name,birth:document.getElementById("birth").value,sport:document.getElementById("sport").value.trim(),group:document.getElementById("group").value.trim(),belt:document.getElementById("belt").value.trim(),parentPhone:document.getElementById("parentPhone").value.trim(),createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+  ["name","birth","sport","group","belt","parentPhone"].forEach(id=>document.getElementById(id).value="");msg.textContent="تم حفظ الرياضي."}
+  catch(e){msg.textContent="تعذر الحفظ. تحقق من الإنترنت وقواعد Firestore."}
 }
-
-async function addAthlete() {
+async function renderAthletes(){
+  if(!requireCoach())return;const list=document.getElementById("list");list.textContent="جارٍ تحميل الرياضيين...";
+  try{const snap=await db.collection("athletes").get();list.innerHTML="";if(snap.empty){list.textContent="لا يوجد رياضيون مسجلون.";return}
+  snap.docs.sort((a,b)=>(a.data().name||"").localeCompare(b.data().name||"")).forEach(doc=>{const a=doc.data(),div=document.createElement("div");div.className="item";const title=document.createElement("b");title.textContent=a.name||"بدون اسم";div.appendChild(title);const info=document.createElement("p");info.className="muted";info.textContent=(a.sport||"")+(a.group?" — الفوج: "+a.group:"")+(a.belt?" — المستوى: "+a.belt:"")+(a.parentPhone?" — هاتف الولي: "+a.parentPhone:"");div.appendChild(info);
+  const actions=document.createElement("div");actions.className="actions";const p=document.createElement("button");p.className="present";p.textContent="🟢 حاضر";p.onclick=()=>markAttendance(doc.id,a.name||"","حاضر");const ab=document.createElement("button");ab.className="absent";ab.textContent="🔴 غائب";ab.onclick=()=>markAttendance(doc.id,a.name||"","غائب");const del=document.createElement("button");del.className="delete";del.textContent="🗑 حذف";del.onclick=()=>deleteAthlete(doc.id,a.name||"هذا الرياضي");actions.append(p,ab,del);div.appendChild(actions);list.appendChild(div)})}
+  catch(e){list.textContent="تعذر تحميل القائمة. تحقق من قواعد Firestore."}
+}
+async function deleteAthlete(id,name){if(!requireCoach())return;if(!confirm("هل أنت متأكد من حذف "+name+"؟ سيتم حذف ملفه فقط، ولن تُحذف سجلات حضوره أو دفعاته القديمة."))return;try{await db.collection("athletes").doc(id).delete();alert("تم حذف ملف الرياضي.");renderAthletes()}catch(e){alert("تعذر الحذف. تحقق من قواعد Firestore.")}}
+async function markAttendance(athleteId,athleteName,status){if(!requireCoach())return;try{await db.collection("attendance").add({athleteId,athleteName,status,date:today(),createdAt:firebase.firestore.FieldValue.serverTimestamp()});alert("تم تسجيل "+status+" للرياضي: "+athleteName)}catch(e){alert("تعذر حفظ الحضور. تحقق من الإنترنت وقواعد Firestore.")}}
+async function renderAttendance(){
+  if(!requireCoach())return;const box=document.getElementById("attlist");box.textContent="جارٍ تحميل سجل الحضور...";
+  try{const snap=await db.collection("attendance").orderBy("createdAt","desc").limit(100).get();box.innerHTML="";if(snap.empty){box.textContent="لا يوجد سجل حضور بعد.";return}snap.forEach(doc=>{const a=doc.data(),p=document.createElement("p");p.className="item";p.textContent=(a.status==="حاضر"?"🟢 ":a.status==="غائب"?"🔴 ":"")+(a.athleteName||"")+" — "+(a.status||"")+" — "+(a.date||"");box.appendChild(p)})}
+  catch(e){box.textContent="تعذر تحميل سجل الحضور."}
+}
+async function loadFinanceSettings(){
   if(!requireCoach())return;
-  const name=document.getElementById("name").value.trim();
-  const msg=document.getElementById("registerMessage");
-  if(!name){msg.textContent="أدخل اسم الرياضي.";return;}
-  try {
-    await db.collection("athletes").add({
-      name,
-      birth:document.getElementById("birth").value,
-      sport:document.getElementById("sport").value.trim(),
-      group:document.getElementById("group").value.trim(),
-      belt:document.getElementById("belt").value.trim(),
-      parentPhone:document.getElementById("parentPhone").value.trim(),
-      createdAt:firebase.firestore.FieldValue.serverTimestamp()
-    });
-    ["name","birth","sport","group","belt","parentPhone"].forEach(id=>{
-      document.getElementById(id).value="";
-    });
-    msg.textContent="تم حفظ الرياضي ورقم هاتف الولي.";
-  } catch(e) {
-    msg.textContent="تعذر الحفظ. تحقق من اتصال الإنترنت وقواعد Firestore.";
-  }
+  try{const doc=await db.collection("financeSettings").doc("general").get();currentMonthlyFee=doc.exists?Number(doc.data().monthlyFee??1500):1500;
+  const f=document.getElementById("monthlyFee");if(f)f.value=currentMonthlyFee;
+  const s=document.getElementById("feeSummary");if(s)s.textContent=money(currentMonthlyFee);
+  const a=document.getElementById("paymentAmount");if(a&&!a.value)a.placeholder="الاشتراك "+currentMonthlyFee+" دج"}
+  catch(e){const m=document.getElementById("settingsMessage");if(m)m.textContent="تعذر قراءة الإعدادات المالية. تحقق من قواعد Firestore."}
 }
-
-async function renderAthletes() {
+async function saveFinanceSettings(){
+  if(!requireCoach())return;const fee=Number(document.getElementById("monthlyFee").value),msg=document.getElementById("settingsMessage");
+  if(!Number.isFinite(fee)||fee<0){msg.textContent="أدخل مبلغًا صحيحًا غير سالب.";return}
+  try{await db.collection("financeSettings").doc("general").set({monthlyFee:fee,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:auth.currentUser.uid},{merge:true});currentMonthlyFee=fee;msg.textContent="تم حفظ الاشتراك الشهري: "+money(fee);document.getElementById("feeSummary").textContent=money(fee)}
+  catch(e){msg.textContent="تعذر الحفظ. تأكد من إضافة قواعد financeSettings إلى Firestore."}
+}
+async function loadAthleteOptions(){
+  if(!requireCoach())return;const sel=document.getElementById("paymentAthlete");sel.innerHTML='<option value="">اختر الرياضي</option>';
+  try{const snap=await db.collection("athletes").get();snap.docs.sort((a,b)=>(a.data().name||"").localeCompare(b.data().name||"")).forEach(d=>{const o=document.createElement("option");o.value=d.id;o.textContent=d.data().name||"بدون اسم";sel.appendChild(o)})}
+  catch(e){sel.innerHTML='<option value="">تعذر تحميل الرياضيين</option>'}
+}
+async function recordSubscription(){
+  if(!requireCoach())return;const athleteId=document.getElementById("paymentAthlete").value,month=document.getElementById("paymentMonth").value||currentMonth(),amount=Number(document.getElementById("paymentAmount").value),msg=document.getElementById("paymentMessage");
+  if(!athleteId){msg.textContent="اختر الرياضي أولًا.";return}if(!Number.isFinite(amount)||amount<=0){msg.textContent="أدخل مبلغًا مدفوعًا صحيحًا أكبر من صفر.";return}
+  try{const athleteDoc=await db.collection("athletes").doc(athleteId).get();if(!athleteDoc.exists){msg.textContent="الرياضي غير موجود.";return}
+  const athleteName=athleteDoc.data().name||"بدون اسم",date=today(),batch=db.batch(),paymentRef=db.collection("subscriptionPayments").doc(),incomeRef=db.collection("incomes").doc();
+  const shared={athleteId,athleteName,month,amount,date,createdAt:firebase.firestore.FieldValue.serverTimestamp(),createdBy:auth.currentUser.uid};
+  batch.set(paymentRef,shared);batch.set(incomeRef,{category:"اشتراك رياضي",reason:"اشتراك "+month+" — "+athleteName,sourcePaymentId:paymentRef.id,...shared});
+  await batch.commit();document.getElementById("paymentAmount").value="";msg.textContent="تم حفظ دفعة "+money(amount)+" للرياضي "+athleteName+" عن شهر "+month+".";
+  await refreshFinance();await renderTransactions();await renderSubscriptionStatus()}
+  catch(e){msg.textContent="تعذر حفظ الدفعة. تحقق من قواعد subscriptionPayments وincomes في Firestore."}
+}
+async function recordIncome(){
+  if(!requireCoach())return;const reason=document.getElementById("incomeReason").value.trim(),amount=Number(document.getElementById("incomeAmount").value),date=document.getElementById("incomeDate").value||today(),msg=document.getElementById("incomeMessage");
+  if(!reason){msg.textContent="اكتب سبب المدخول.";return}if(!Number.isFinite(amount)||amount<=0){msg.textContent="أدخل مبلغًا صحيحًا أكبر من صفر.";return}
+  try{await db.collection("incomes").add({category:"مدخول آخر",reason,amount,date,createdAt:firebase.firestore.FieldValue.serverTimestamp(),createdBy:auth.currentUser.uid});document.getElementById("incomeReason").value="";document.getElementById("incomeAmount").value="";msg.textContent="تم حفظ المدخول.";await refreshFinance();await renderTransactions()}
+  catch(e){msg.textContent="تعذر الحفظ. تأكد من قواعد incomes في Firestore."}
+}
+async function recordExpense(){
+  if(!requireCoach())return;const category=document.getElementById("expenseCategory").value,reason=document.getElementById("expenseReason").value.trim(),amount=Number(document.getElementById("expenseAmount").value),date=document.getElementById("expenseDate").value||today(),msg=document.getElementById("expenseMessage");
+  if(!reason){msg.textContent="اكتب تفاصيل المصروف.";return}if(!Number.isFinite(amount)||amount<=0){msg.textContent="أدخل مبلغًا صحيحًا أكبر من صفر.";return}
+  try{await db.collection("expenses").add({category,reason,amount,date,createdAt:firebase.firestore.FieldValue.serverTimestamp(),createdBy:auth.currentUser.uid});document.getElementById("expenseReason").value="";document.getElementById("expenseAmount").value="";msg.textContent="تم حفظ المصروف.";await refreshFinance();await renderTransactions()}
+  catch(e){msg.textContent="تعذر الحفظ. تأكد من قواعد expenses في Firestore."}
+}
+async function refreshFinance(){
   if(!requireCoach())return;
-  const list=document.getElementById("list");
-  list.textContent="جارٍ تحميل الرياضيين...";
-  try {
-    const snap=await db.collection("athletes").get();
-    list.innerHTML="";
-    if(snap.empty){list.textContent="لا يوجد رياضيون مسجلون.";return;}
-    const docs=snap.docs.sort((a,b)=>(a.data().name||"").localeCompare(b.data().name||""));
-    docs.forEach(doc=>{
-      const a=doc.data();
-      const div=document.createElement("div");
-      div.className="item";
-      const title=document.createElement("b");
-      title.textContent=a.name||"بدون اسم";
-      div.appendChild(title);
-
-      const info=document.createElement("p");
-      info.className="muted";
-      info.textContent=(a.sport||"")+
-        (a.group?" — الفوج: "+a.group:"")+
-        (a.belt?" — المستوى: "+a.belt:"")+
-        (a.parentPhone?" — هاتف الولي: "+a.parentPhone:"");
-      div.appendChild(info);
-
-      const actions=document.createElement("div");
-      actions.className="actions";
-
-      const present=document.createElement("button");
-      present.className="present";
-      present.textContent="🟢 حاضر";
-      present.onclick=()=>markAttendance(doc.id,a.name||"", "حاضر");
-
-      const absent=document.createElement("button");
-      absent.className="absent";
-      absent.textContent="🔴 غائب";
-      absent.onclick=()=>markAttendance(doc.id,a.name||"", "غائب");
-
-      const del=document.createElement("button");
-      del.className="delete";
-      del.textContent="🗑 حذف";
-      del.onclick=()=>deleteAthlete(doc.id,a.name||"هذا الرياضي");
-
-      actions.append(present,absent,del);
-      div.appendChild(actions);
-      list.appendChild(div);
-    });
-  } catch(e) {
-    list.textContent="تعذر تحميل القائمة. تحقق من قواعد Firestore.";
-  }
+  try{const [ins,exps,settings]=await Promise.all([db.collection("incomes").get(),db.collection("expenses").get(),db.collection("financeSettings").doc("general").get()]);
+  currentMonthlyFee=settings.exists?Number(settings.data().monthlyFee??1500):1500;
+  const incomeTotal=ins.docs.reduce((s,d)=>s+Number(d.data().amount||0),0),expenseTotal=exps.docs.reduce((s,d)=>s+Number(d.data().amount||0),0);
+  document.getElementById("totalIncome").textContent=money(incomeTotal);document.getElementById("totalExpenses").textContent=money(expenseTotal);document.getElementById("netBalance").textContent=money(incomeTotal-expenseTotal);document.getElementById("feeSummary").textContent=money(currentMonthlyFee)}
+  catch(e){document.getElementById("totalIncome").textContent="تعذر التحميل";document.getElementById("totalExpenses").textContent="تعذر التحميل";document.getElementById("netBalance").textContent="—"}
 }
-
-async function deleteAthlete(id,name) {
-  if(!requireCoach())return;
-  if(!confirm("هل أنت متأكد من حذف "+name+"؟ سيتم حذف ملفه فقط، ولن تُحذف سجلات حضوره القديمة."))return;
-  try {
-    await db.collection("athletes").doc(id).delete();
-    alert("تم حذف ملف الرياضي.");
-    renderAthletes();
-  } catch(e) {
-    alert("تعذر الحذف. تحقق من قواعد Firestore.");
-  }
+async function renderTransactions(){
+  if(!requireCoach())return;const box=document.getElementById("transactions");box.textContent="جارٍ تحميل العمليات...";
+  try{const [ins,exps]=await Promise.all([db.collection("incomes").get(),db.collection("expenses").get()]);let rows=[];
+  ins.docs.forEach(d=>{const x=d.data();rows.push({kind:"مدخول",amount:Number(x.amount||0),date:x.date||"",reason:x.reason||x.category||"",category:x.category||"مدخول",id:d.id,collection:"incomes"})});
+  exps.docs.forEach(d=>{const x=d.data();rows.push({kind:"مصروف",amount:Number(x.amount||0),date:x.date||"",reason:(x.category?x.category+" — ":"")+(x.reason||""),id:d.id,collection:"expenses"})});
+  rows.sort((a,b)=>b.date.localeCompare(a.date));box.innerHTML="";if(!rows.length){box.textContent="لا توجد عمليات مالية مسجلة.";return}
+  rows.slice(0,30).forEach(x=>{const d=document.createElement("div");d.className="item";const t=document.createElement("b");t.className=x.kind==="مدخول"?"good":"bad";t.textContent=x.kind+" · "+money(x.amount);const p=document.createElement("p");p.className="muted";p.textContent=x.reason+" — "+x.date;const del=document.createElement("button");del.className="delete";del.textContent="حذف العملية";del.onclick=()=>deleteTransaction(x);d.append(t,p,del);box.appendChild(d)})}
+  catch(e){box.textContent="تعذر تحميل العمليات. تحقق من قواعد Firestore."}
 }
-
-async function markAttendance(athleteId,athleteName,status) {
-  if(!requireCoach())return;
-  try {
-    await db.collection("attendance").add({
-      athleteId,
-      athleteName,
-      status,
-      date:new Date().toLocaleDateString("en-CA"),
-      createdAt:firebase.firestore.FieldValue.serverTimestamp()
-    });
-    alert("تم تسجيل "+status+" للرياضي: "+athleteName);
-  } catch(e) {
-    alert("تعذر حفظ الحضور. تحقق من الإنترنت وقواعد Firestore.");
-  }
+async function deleteTransaction(x){
+  if(!requireCoach())return;if(!confirm("هل تريد حذف هذه العملية المالية؟ هذا الإجراء لا يمكن التراجع عنه."))return;
+  try{if(x.collection==="incomes"){const ref=db.collection("incomes").doc(x.id),doc=await ref.get(),data=doc.data()||{};const batch=db.batch();batch.delete(ref);if(data.sourcePaymentId)batch.delete(db.collection("subscriptionPayments").doc(data.sourcePaymentId));await batch.commit()}else await db.collection("expenses").doc(x.id).delete();
+  await refreshFinance();await renderTransactions();await renderSubscriptionStatus()}
+  catch(e){alert("تعذر حذف العملية. تحقق من قواعد Firestore.")}
 }
-
-async function renderAttendance() {
-  if(!requireCoach())return;
-  const box=document.getElementById("attlist");
-  box.textContent="جارٍ تحميل سجل الحضور...";
-  try {
-    const snap=await db.collection("attendance")
-      .orderBy("createdAt","desc").limit(100).get();
-    box.innerHTML="";
-    if(snap.empty){box.textContent="لا يوجد سجل حضور بعد.";return;}
-    snap.forEach(doc=>{
-      const a=doc.data();
-      const p=document.createElement("p");
-      p.className="item";
-      p.textContent=(a.status==="حاضر"?"🟢 ":a.status==="غائب"?"🔴 ":"")+
-        (a.athleteName||"")+
-        " — "+(a.status||"")+
-        " — "+(a.date||"");
-      box.appendChild(p);
-    });
-  } catch(e) {
-    box.textContent="تعذر تحميل سجل الحضور.";
-  }
+async function renderSubscriptionStatus(){
+  if(!requireCoach())return;const box=document.getElementById("subscriptionStatus");box.textContent="جارٍ حساب الاشتراكات...";
+  try{const [athletes,payments,settings]=await Promise.all([db.collection("athletes").get(),db.collection("subscriptionPayments").where("month","==",currentMonth()).get(),db.collection("financeSettings").doc("general").get()]);
+  const fee=settings.exists?Number(settings.data().monthlyFee??1500):1500;const paid={};payments.docs.forEach(d=>{const p=d.data();paid[p.athleteId]=(paid[p.athleteId]||0)+Number(p.amount||0)});
+  box.innerHTML="";if(athletes.empty){box.textContent="لا يوجد رياضيون مسجلون.";return}
+  athletes.docs.sort((a,b)=>(a.data().name||"").localeCompare(b.data().name||"")).forEach(d=>{const a=d.data(),sum=paid[d.id]||0,remaining=Math.max(0,fee-sum),div=document.createElement("div");div.className="item";const title=document.createElement("b");title.textContent=a.name||"بدون اسم";const p=document.createElement("p");p.className="muted";p.textContent="مدفوع: "+money(sum)+" / المطلوب: "+money(fee)+" / المتبقي: "+money(remaining);const state=document.createElement("b");state.className=remaining===0?"good":"bad";state.textContent=remaining===0?"✅ مكتمل":"⏳ "+(sum>0?"دفع جزئي":"لم يدفع");div.append(title,p,state);box.appendChild(div)})}
+  catch(e){box.textContent="تعذر حساب الاشتراكات. تأكد من قواعد subscriptionPayments وfinanceSettings."}
 }
+document.getElementById("paymentMonth").value=currentMonth();
+document.getElementById("incomeDate").value=today();
+document.getElementById("expenseDate").value=today();
 </script>
 </body>
 </html>
