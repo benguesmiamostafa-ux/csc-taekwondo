@@ -1,5 +1,5 @@
 
-name: Build CSC Taekwondo APK
+name: Build Club App APK
 
 on:
   workflow_dispatch:
@@ -38,7 +38,7 @@ jobs:
           npm init -y
           npm install @capacitor/core @capacitor/android
           npm install --save-dev @capacitor/cli
-          npx cap init CSC com.csc.taekwondo --web-dir www
+          npx cap init "Club App" com.csc.taekwondo --web-dir www
 
       - name: Build Android APK
         run: |
@@ -52,6 +52,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: CSC-Taekwondo-APK
+          name: Club-App-APK
           path: csc-build/android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
