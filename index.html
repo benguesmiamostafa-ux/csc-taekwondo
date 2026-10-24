@@ -112,7 +112,42 @@ auth.onAuthStateChanged(user=>{athleteCacheLoaded=false;athleteCache=[];updateCo
 async function login(){const email=document.getElementById("email").value.trim(),password=document.getElementById("password").value,msg=document.getElementById("loginMessage");if(!email||!password){msg.textContent="أدخل البريد وكلمة المرور.";return}try{const r=await auth.signInWithEmailAndPassword(email,password);if(r.user.uid!==COACH_UID){await auth.signOut();msg.textContent="هذا الحساب غير مصرح له بالدخول كمدرب. استعمل فضاء الأولياء.";return}msg.textContent="تم تسجيل الدخول بنجاح.";showPage("coach")}catch(e){msg.textContent="تعذر الدخول. تحقق من البريد وكلمة المرور."}}
 async function logout(){await auth.signOut();document.getElementById("loginMessage").textContent="تم تسجيل الخروج.";showPage("coach")}
 async function parentRegister(){const email=document.getElementById("parentEmail").value.trim().toLowerCase(),password=document.getElementById("parentPassword").value,msg=document.getElementById("parentMessage");if(!email||!password){msg.textContent="أدخل البريد الإلكتروني وكلمة المرور.";return}if(password.length<6){msg.textContent="كلمة المرور لازم تكون 6 أحرف على الأقل.";return}try{const cred=await auth.createUserWithEmailAndPassword(email,password);await db.collection("parents").doc(cred.user.uid).set({email:email,status:"pending",athleteIds:[],createdAt:firebase.firestore.FieldValue.serverTimestamp()});msg.textContent="تم إنشاء الحساب. انتظر موافقة المدرب وربط أبنائك.";await syncParentView()}catch(e){msg.textContent=e.code==="auth/email-already-in-use"?"هذا البريد مسجل من قبل. جرّب تسجيل الدخول.":"تعذر إنشاء الحساب. تحقق من اتصال الإنترنت وإعدادات Firebase."}}
-async function parentLogin(){const email=document.getElementById("parentEmail").value.trim(),password=document.getElementById("parentPassword").value,msg=document.getElementById("parentMessage");if(!email||!password){msg.textContent="أدخل البريد وكلمة المرور.";return}try{await auth.signInWithEmailAndPassword(email,password);await syncParentView()}catch(e){msg.textContent="تعذر الدخول. تحقق من البريد وكلمة المرور."}}
+async function parentLogin() {
+  const email = document.getElementById("parentEmail").value.trim();
+  const password = document.getElementById("parentPassword").value;
+  const msg = document.getElementById("parentMessage");
+
+  if (!email || !password) {
+    msg.textContent = "أدخل البريد الإلكتروني وكلمة المرور.";
+    return;
+  }
+
+  try {
+    const cred = await auth.signInWithEmailAndPassword(email, password);
+    const user = cred.user;
+    const parentRef = db.collection("parents").doc(user.uid);
+    const parentSnap = await parentRef.get();
+
+    if (!parentSnap.exists) {
+      await parentRef.set({
+        email: user.email,
+        status: "pending",
+        athleteIds: [],
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
+
+    msg.textContent = "تم الدخول بنجاح.";
+    await syncParentView();
+
+  } catch (e) {
+    console.error("Parent login error:", e);
+    msg.textContent =
+      e.code === "permission-denied"
+        ? "تعذر إنشاء ملف الولي. تحقق من قواعد Firestore."
+        : "تعذر الدخول أو تحميل ملف الولي. تحقق من البريد وكلمة المرور والاتصال.";
+  }
+}
 async function parentLogout(){await auth.signOut();showPage("parent");document.getElementById("parentMessage").textContent="تم تسجيل الخروج."}
 async function syncParentView(){const user=auth.currentUser;if(!user||user.uid===COACH_UID){document.getElementById("parentAuthBox").classList.remove("hidden");document.getElementById("parentDashboard").classList.add("hidden");return}document.getElementById("parentAuthBox").classList.add("hidden");document.getElementById("parentDashboard").classList.remove("hidden");document.getElementById("parentIdentity").textContent="الحساب: "+(user.email||"");await loadParentDashboard()}
 async function loadParentDashboard(){
