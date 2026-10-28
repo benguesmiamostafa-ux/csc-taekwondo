@@ -237,7 +237,52 @@ async function renderAttendance(){if(!requireCoach())return;const box=document.g
 async function loadFinanceSettings(){if(!requireCoach())return;try{const data=await getFinanceData();currentMonthlyFee=data.settingsExists?Number(data.settings.monthlyFee??1500):1500;const fee=document.getElementById("monthlyFee"),summary=document.getElementById("feeSummary"),amount=document.getElementById("paymentAmount");if(fee)fee.value=currentMonthlyFee;if(summary)summary.textContent=money(currentMonthlyFee);if(amount&&!amount.value)amount.placeholder="الاشتراك "+currentMonthlyFee+" دج"}catch(e){console.error("loadFinanceSettings",e);const msg=document.getElementById("settingsMessage");if(msg)msg.textContent="تعذر قراءة الإعدادات المالية ("+(e.code||"خطأ اتصال")+")."}}
 async function saveFinanceSettings(){if(!requireCoach())return;const fee=Number(document.getElementById("monthlyFee").value),msg=document.getElementById("settingsMessage");if(!Number.isFinite(fee)||fee<0){msg.textContent="أدخل مبلغًا صحيحًا غير سالب.";return}try{await db.collection("financeSettings").doc("general").set({monthlyFee:fee,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:auth.currentUser.uid},{merge:true});invalidateFinanceCache();currentMonthlyFee=fee;msg.textContent="تم حفظ الاشتراك الشهري: "+money(fee);document.getElementById("feeSummary").textContent=money(fee)}catch(e){msg.textContent="تعذر الحفظ. تحقق من قواعد Firestore."}}
 async function loadAthleteOptions(){if(!requireCoach())return;const sel=document.getElementById("paymentAthlete");function paint(athletes){const keep=sel.value;sel.innerHTML='<option value="">اختر الرياضي</option>';athletes.forEach(a=>{const o=document.createElement("option");o.value=a.id;o.textContent=a.name||"بدون اسم";sel.appendChild(o)});if(keep&&athletes.some(a=>a.id===keep))sel.value=keep}if(athleteCacheLoaded)paint(athleteCache);else sel.innerHTML='<option value="">جارٍ تحميل الرياضيين...</option>';try{paint(await fetchAthletes())}catch(e){console.error("loadAthleteOptions",e);if(!athleteCacheLoaded)sel.innerHTML='<option value="">تعذر تحميل الرياضيين ('+(e.code||"خطأ")+')</option>'}}
-async function recordSubscription(){if(!requireCoach())return;const athleteId=document.getElementById("paymentAthlete").value,month=document.getElementById("paymentMonth").value||currentMonth(),amount=Number(document.getElementById("paymentAmount").value),msg=document.getElementById("paymentMessage"),btn=document.querySelector('button[onclick="recordSubscription()"]');if(!athleteId){msg.textContent="اختر الرياضي أولًا.";return}if(!/^\d{4}-\d{2}$/.test(month)){msg.textContent="اختر شهرًا صحيحًا.";return}if(!Number.isFinite(amount)||amount<=0){msg.textContent="أدخل مبلغًا صحيحًا أكبر من صفر.";return}if(btn&&btn.disabled)return;if(btn){btn.disabled=true;btn.textContent="جارٍ حفظ الدفعة..."}msg.textContent="جارٍ تسجيل الدفعة...";try{let athlete=athleteCache.find(a=>a.id===athleteId);if(!athlete){const ad=await db.collection("athletes").doc(athleteId).get();if(!ad.exists)throw Object.assign(new Error("athlete-not-found"),{code:"not-found"});athlete={id:athleteId,...ad.data()}}const athleteName=athlete.name||"بدون اسم",date=today(),batch=db.batch(),pr=db.collection("subscriptionPayments").doc(),ir=db.collection("incomes").doc(),shared={athleteId,athleteName,month,amount,date,createdAt:firebase.firestore.FieldValue.serverTimestamp(),createdBy:auth.currentUser.uid};batch.set(pr,shared);batch.set(ir,{category:"اشتراك رياضي",reason:"اشتراك "+month+" — "+athleteName,sourcePaymentId:pr.id,...shared});await batch.commit();invalidateFinanceCache();document.getElementById("paymentAmount").value="";msg.textContent="تم حفظ دفعة "+money(amount)+" للرياضي "+athleteName+" عن شهر "+month+" ✓";msg.className="muted good";if(btn){btn.textContent="تم الحفظ ✓";btn.disabled=false}/* The Firestore batch has committed: unlock the form immediately. Dashboard refreshes are secondary and run in the background. */setTimeout(()=>{Promise.allSettled([refreshFinance(),renderTransactions(),renderSubscriptionStatus()]).then(()=>{if(btn)btn.textContent="حفظ دفعة الاشتراك"})},0)}catch(e){console.error("recordSubscription failed",e);const code=e&&e.code?e.code:"unknown";msg.className="muted bad";msg.textContent="فشل حفظ الدفعة ("+code+"). "+(code==="permission-denied"?"قواعد Firestore تمنع الكتابة في subscriptionPayments أو incomes؛ يجب السماح للمدرب بالكتابة في المجموعتين.":code==="unavailable"||code==="network-request-failed"?"تحقق من اتصال الإنترنت ثم أعد المحاولة.":"تحقق من اختيار الرياضي والشهر والمبلغ ثم أعد المحاولة.");if(btn){btn.disabled=false;btn.textContent="حفظ دفعة الاشتراك"}}}
+async function recordSubscription(){
+  if(!requireCoach())return;
+  const athleteId=document.getElementById("paymentAthlete").value;
+  const month=document.getElementById("paymentMonth").value||currentMonth();
+  const amount=Number(document.getElementById("paymentAmount").value);
+  const msg=document.getElementById("paymentMessage");
+  const btn=document.querySelector('button[onclick="recordSubscription()"]');
+  if(!athleteId){msg.textContent="اختر الرياضي أولًا.";return;}
+  if(!/^\d{4}-\d{2}$/.test(month)){msg.textContent="اختر شهرًا صحيحًا.";return;}
+  if(!Number.isFinite(amount)||amount<=0){msg.textContent="أدخل مبلغًا صحيحًا أكبر من صفر.";return;}
+  if(btn&&btn.disabled)return;
+  if(btn){btn.disabled=true;btn.textContent="جارٍ حفظ الدفعة...";}
+  msg.className="muted";msg.textContent="جارٍ حفظ الدفعة الأساسية...";
+  try{
+    let athlete=athleteCache.find(a=>a.id===athleteId);
+    if(!athlete){
+      const ad=await db.collection("athletes").doc(athleteId).get();
+      if(!ad.exists)throw Object.assign(new Error("athlete-not-found"),{code:"not-found"});
+      athlete={id:athleteId,...ad.data()};
+    }
+    const athleteName=athlete.name||"بدون اسم";
+    const date=today();
+    const paymentRef=db.collection("subscriptionPayments").doc();
+    const incomeRef=db.collection("incomes").doc();
+    const shared={athleteId,athleteName,month,amount,date,createdAt:firebase.firestore.FieldValue.serverTimestamp(),createdBy:auth.currentUser.uid};
+    // Save the payment first. The finance mirror is secondary and must not block the payment form.
+    await paymentRef.set(shared);
+    invalidateFinanceCache();
+    document.getElementById("paymentAmount").value="";
+    msg.className="muted good";
+    msg.textContent="تم حفظ دفعة "+money(amount)+" للرياضي "+athleteName+" عن شهر "+month+" ✓";
+    if(btn){btn.textContent="تم الحفظ ✓";btn.disabled=false;}
+    setTimeout(()=>{if(btn)btn.textContent="حفظ دفعة الاشتراك";},1800);
+    // Add the income record separately in the background; never delay confirmation of the saved payment.
+    incomeRef.set({category:"اشتراك رياضي",reason:"اشتراك "+month+" — "+athleteName,sourcePaymentId:paymentRef.id,...shared})
+      .then(()=>{invalidateFinanceCache();return Promise.allSettled([refreshFinance(),renderTransactions(),renderSubscriptionStatus()]);})
+      .catch(e=>{console.error("income mirror failed",e);msg.className="muted bad";msg.textContent="تم حفظ الاشتراك، لكن تعذر تحديث سجل المداخيل. تحقق من قواعد incomes والاتصال.";});
+    Promise.allSettled([renderSubscriptionStatus()]).catch(()=>{});
+  }catch(e){
+    console.error("recordSubscription failed",e);
+    const code=e&&e.code?e.code:"unknown";
+    msg.className="muted bad";
+    msg.textContent="تعذر حفظ الاشتراك ("+code+"). "+(code==="permission-denied"?"تحقق من قواعد Firestore لمجموعة subscriptionPayments.":code==="unavailable"||code==="network-request-failed"?"الاتصال بـ Firebase غير مستقر؛ تحقق من الإنترنت قبل إعادة المحاولة.":"راجع اختيار الرياضي والشهر والمبلغ ثم أعد المحاولة.");
+    if(btn){btn.disabled=false;btn.textContent="حفظ دفعة الاشتراك";}
+  }
+}
 async function recordIncome(){if(!requireCoach())return;const reason=document.getElementById("incomeReason").value.trim(),amount=Number(document.getElementById("incomeAmount").value),date=document.getElementById("incomeDate").value||today(),msg=document.getElementById("incomeMessage");if(!reason){msg.textContent="اكتب سبب المدخول.";return}if(!Number.isFinite(amount)||amount<=0){msg.textContent="أدخل مبلغًا صحيحًا أكبر من صفر.";return}try{await db.collection("incomes").add({category:"مدخول آخر",reason,amount,date,createdAt:firebase.firestore.FieldValue.serverTimestamp(),createdBy:auth.currentUser.uid});invalidateFinanceCache();document.getElementById("incomeReason").value="";document.getElementById("incomeAmount").value="";msg.textContent="تم حفظ المدخول.";await refreshFinance();await renderTransactions()}catch(e){msg.textContent="تعذر الحفظ. تحقق من قواعد incomes."}}
 async function recordExpense(){if(!requireCoach())return;const category=document.getElementById("expenseCategory").value,reason=document.getElementById("expenseReason").value.trim(),amount=Number(document.getElementById("expenseAmount").value),date=document.getElementById("expenseDate").value||today(),msg=document.getElementById("expenseMessage");if(!reason){msg.textContent="اكتب تفاصيل المصروف.";return}if(!Number.isFinite(amount)||amount<=0){msg.textContent="أدخل مبلغًا صحيحًا أكبر من صفر.";return}try{await db.collection("expenses").add({category,reason,amount,date,createdAt:firebase.firestore.FieldValue.serverTimestamp(),createdBy:auth.currentUser.uid});invalidateFinanceCache();document.getElementById("expenseReason").value="";document.getElementById("expenseAmount").value="";msg.textContent="تم حفظ المصروف.";await refreshFinance();await renderTransactions()}catch(e){msg.textContent="تعذر الحفظ. تحقق من قواعد expenses."}}
 async function refreshFinance(){if(!requireCoach())return;try{const data=await getFinanceData();currentMonthlyFee=data.settingsExists?Number(data.settings.monthlyFee??1500):1500;const it=data.incomes.reduce((sum,x)=>sum+Number(x.amount||0),0),et=data.expenses.reduce((sum,x)=>sum+Number(x.amount||0),0);document.getElementById("totalIncome").textContent=money(it);document.getElementById("totalExpenses").textContent=money(et);document.getElementById("netBalance").textContent=money(it-et);document.getElementById("feeSummary").textContent=money(currentMonthlyFee)}catch(e){console.error("refreshFinance",e);document.getElementById("totalIncome").textContent="تعذر التحميل";document.getElementById("totalExpenses").textContent="تعذر التحميل";document.getElementById("netBalance").textContent="—"}}
